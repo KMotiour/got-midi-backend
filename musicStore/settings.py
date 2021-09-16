@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-&4iws1qg&@=e4fp$r#w$gggj9*0n*+zvh@p$fgg-sfx(e4uy+-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['got-midi.herokuapp.com', '*']
 
 
 # Application definition
