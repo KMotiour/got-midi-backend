@@ -4,6 +4,9 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.core.mail import send_mail  
 from django.dispatch import receiver
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.core.mail import send_mail  
+from django.dispatch import receiver
 
 def upload_Music(instance, filename):
     return 'prfile/{filename}'.format(filename=filename)
@@ -51,3 +54,23 @@ class NewUsers(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return str(self.email)
+
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    email_plaintext_message =  "You're receiving this email because you requested a password reset for your user account at U-profile.\n\n go through the link to reset password: \n http://localhost:3000/password/reset/confirm/{} \n\n \n\n Thanks for using our site! \n\n The U-profile team.".format(reset_password_token.key)
+
+    html_content ='<a href="http://localhost:3000/resetPassword" >http://localhost:3000/resetPassword</a>'
+
+    send_mail(
+        # title:
+        "Password Reset for {title}".format(title="U-profile"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "Got-Midi Team",
+        # to:
+        [reset_password_token.user.email]
+    )

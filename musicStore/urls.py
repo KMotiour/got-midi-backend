@@ -30,6 +30,9 @@ urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
     path('auth/', include('djoser.urls.jwt')),
     path('api/token/', MyTokenObtainPairView.as_view(), name="apiToken" ),
+    path('api/password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path('/api/password_reset/confirm/', include('django_rest_passwordreset.urls', namespace='password_reset_confirm')),
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     # urlpatterns += [re_path(r'^.*', TemplateView.as_view(template_name='index.html'))]
