@@ -11,6 +11,7 @@ import base64
 import essentia.standard as es
 from django.core.files.storage import default_storage
 from midi2audio import FluidSynth
+import midi2audio
 from django.contrib.auth import get_user_model, login
 from rest_framework.pagination import PageNumberPagination
 
@@ -136,7 +137,7 @@ class MusicCreateSerializers(serializers.ModelSerializer):
         music = Musics.objects.create(title=titlefinder, artist=artist,
         artWork=artWork, spotifyId=spotify_id, price=price, song=song, youtubeId=youtubeId)
 
-        fs = FluidSynth()
+        fs = midi2audio.FluidSynth()
         if strSong[-3:]=='mid':
             # conver song midi file to mp3
             fs.midi_to_audio(str(music.song.path), str(music.song.path)[0:-4]+'.mp3')
