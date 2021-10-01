@@ -1,0 +1,76 @@
+fuser 80/tcp -k
+
+cd /root/got-midi/got-midi-backend
+sudo apt-get install screen
+screen celery -A musicStore worker -l info -B 
+screen ./manage.py runserver 0.0.0.0:8000
+
+cd /root/got-midi/got-midi-frontend
+screen npm start
+
+
+
+source env/bin/activate
+
+celery -A musicStore worker -B && gunicorn --bind 0.0.0.0:8000 musicStore.wsgi 
+
+gunicorn --bind 0.0.0.0:8000 musicStore.wsgi
+
+
+
+	  -----------------Gunicorn---------------
+
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=harry
+Group=www-data
+WorkingDirectory=/root/got-midi/got-midi-backend
+ExecStart=/root/got-midi/got-midi-backend/env/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/gunicorn.sock \
+          musicStore.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+
+
+server {
+    listen 8001;
+    server_name www.gotmidi.com;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /root/got-midi/got-midi-backend;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+
+sudo ln -s /etc/nginx/sites-available/musicStore /etc/nginx/sites-enabled/
+
+
+
+	    -----------------nginx-----------------
+
+sudo vim /etc/nginx/sites-available/fileName #create ngnix file
+sudo ln -s /etc/nginx/sites-available/fileName /etc/nginx/sites-enabled/ #enable ngnix file
+
+sudo systemctl restart nginx # restart nginex
+sudo service  nginx restart  # restart nginex
+sudo service  gunicorn restart  # restart gunicorn
+sudo systemctl daemon-reload
+cd /etc/nginx/sites-enabled/  # check enable files in nginx
+sudo rm filename   # delete enable file in nginx
+
+
